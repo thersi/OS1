@@ -3,8 +3,8 @@
 
 int main()
 {
-   // printf() displays the string inside quotation
-   while (1)
+  
+   while (1) //needs different logic than this maybe 
    {
       printf ("\n======================================================\n");
       printf("Select one of the following operations:\n");
@@ -13,24 +13,23 @@ int main()
       char chr;
       printf("Enter a character: ");
       scanf("%c", &chr);
-      //printf("\nyou typed: %c ", chr);
-      //printf("%c", b);
+      
       
       switch (chr){
          case 's':
-            printf("You typed s\n");
+            printf("You typed s\n"); //function call here
             break;
 
          case 'l':
-            printf("You typed l\n");
+            printf("You typed l\n"); //function call here
             break;
 
          case 'c':
-            printf("You typed c\n");
+            printf("You typed c\n"); //function call here
             break;
 
          case 'x':
-            printf("good bye\n");
+            printf("good bye\n"); //function call here
             exit(0);
 
          // operator doesn't match any option
