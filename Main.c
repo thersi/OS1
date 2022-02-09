@@ -1,17 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void setAlarm(){
+void setAlarm(){ // could be boolean to return validation to main loop 
+   int hrs, mins, seconds,i=0;
+   printf("Enter Hours: ");
+   scanf("%d",&hrs);
+   printf("Enter Minute: ");
+   scanf("%d",&mins);
+   printf("Enter Second: ");
+   scanf("%d",&seconds);
 
+   //Validation of input here
+   //create time object/variable 
+   //add alarm to data structure 
+   printf("TIMER SET AT: %d : %d : %d ",hrs,mins,--seconds);
 }
 
-void deleteAlarm(int number){
+void deleteAlarm(){ // could be boolean to return validation to main loop 
+   int number;
+   printf("Type the number of the alarm you want to cancel: "); 
+   scanf("%d", &number);
    //DO SOMETHING HERE
+   // validation that number corresponds to an alarm. error if not 
+   // remove alarm from data structure
    printf("Alarm %d deleted \n", number);
 }
 
 void listAlarms(){
-
+   //List all alarms in the data structure 
 }
 
 
@@ -25,14 +41,14 @@ int main()
       printf("s (schedule) | l (list) | c (cancel) | x (exit)\n");
       printf ("======================================================\n");
       char chr;
-      int number;
+      //int number;
       printf("Enter a character: ");
       scanf("%c", &chr);
       
       
       switch (chr){
          case 's':
-            printf("You typed s\n"); //function call here
+            setAlarm();
             break;
 
          case 'l':
@@ -40,10 +56,7 @@ int main()
             break;
 
          case 'c':
-            
-            printf("Type the number of the alarm you want to cancel: "); 
-            scanf("%d", &number);
-            deleteAlarm(number);
+            deleteAlarm();
             break;
 
          case 'x':
