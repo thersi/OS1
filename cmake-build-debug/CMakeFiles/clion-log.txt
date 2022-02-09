@@ -1,0 +1,6 @@
+C:\Windows\system32\wsl.exe --distribution Ubuntu --exec /bin/bash -c "export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd /mnt/c/Users/Therese/CLionProjects/OS1/cmake-build-debug && cmake -DCMAKE_BUILD_TYPE=Debug -G 'CodeBlocks - Unix Makefiles' /mnt/c/Users/Therese/CLionProjects/OS1"
+CMake Error at CMakeLists.txt:1 (cmake_minimum_required):
+  CMake 3.21 or higher is required.  You are running version 3.16.3
+
+
+-- Configuring incomplete, errors occurred!
