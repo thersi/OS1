@@ -12,7 +12,7 @@ void setAlarm(){ // could be boolean to return validation to main loop
 
    //Validation of input here
    //create time object/variable 
-   //add alarm to data structure 
+   //add alarm to data structure of alarms
    printf("TIMER SET AT: %d : %d : %d ",hrs,mins,--seconds);
 }
 
@@ -52,7 +52,7 @@ int main()
             break;
 
          case 'l':
-            printf("You typed l\n"); //function call here
+            listAlarms();
             break;
 
          case 'c':
