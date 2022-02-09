@@ -1,6 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void setAlarm(){
+
+}
+
+void deleteAlarm(int number){
+   //DO SOMETHING HERE
+   printf("Alarm %d deleted \n", number);
+}
+
+void listAlarms(){
+
+}
+
+
 int main()
 {
   
@@ -11,6 +25,7 @@ int main()
       printf("s (schedule) | l (list) | c (cancel) | x (exit)\n");
       printf ("======================================================\n");
       char chr;
+      int number;
       printf("Enter a character: ");
       scanf("%c", &chr);
       
@@ -25,7 +40,10 @@ int main()
             break;
 
          case 'c':
-            printf("You typed c\n"); //function call here
+            
+            printf("Type the number of the alarm you want to cancel: "); 
+            scanf("%d", &number);
+            deleteAlarm(number);
             break;
 
          case 'x':
