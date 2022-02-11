@@ -2,7 +2,20 @@
 #include <stdlib.h>
 #include <time.h>
 
+struct alarm {
+   int alarm_id; // !PLACEHOLDER! should maybe be PID of responsible child process. CHANGE LATER (use fork when initiating?)
+   // should also have a ringtone or something here. 
+   time_t time; 
+};
+
+int count = 0;
+struct alarm alarms[100]; //maximum of 100 alarms. Maybe better to have infinite, dunno if possible 
+
+
+
 void setAlarm(){ // could be boolean to return validation to main loop 
+   //TAKE DATE AS INPUT TOO? 
+
    int hrs, mins, seconds,i=0;
    printf("Enter Hours: ");
    scanf("%d",&hrs);
@@ -44,6 +57,15 @@ void setAlarm(){ // could be boolean to return validation to main loop
    date->tm_year = yearnow;
    /* convert the structure to a time_t value */
    file = mktime(date);
+
+   //create a alarm structure and add it to array of structs
+   
+   struct alarm a;
+   a.time = file;
+   a.alarm_id = count;
+   alarms[count] = a; 
+   count++;
+   
     
    /* output results */
    printf("Timer set at %s\n",ctime(&file));
@@ -55,6 +77,10 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
    int number;
    printf("Type the number of the alarm you want to cancel: "); 
    scanf("%d", &number);
+   if (&alarms[number] != NULL){
+      //remove alarm from list 
+      //should make alarmid and index independent, to avoid "holes"? 
+   }
    //DO SOMETHING HERE
    // validation that number corresponds to an alarm. error if not 
    // remove alarm from data structure
@@ -63,7 +89,18 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
 
 void listAlarms(){
    time_t t = time(NULL);
-   printf("UTC:       %s", asctime(localtime(&t)));
+   //printf("\nUTC:       %s \n", asctime(localtime(&t)));
+   printf("\n%-20s %-10s\n", "UTC:",  asctime(localtime(&t)));
+   printf("%-20s %-10s\n", "Alarm ID", "Time");
+   printf("------------------------------------------------------\n");
+   for (int i = 0; i < count; i++)
+   {
+      if (&alarms[i] != NULL){
+         printf("%-20d %-10s \n", alarms[i].alarm_id, ctime(&alarms[i].time));
+         
+      }
+   }
+   
    
    //List all alarms in the data structure 
 }
@@ -71,7 +108,7 @@ void listAlarms(){
 
 int main()
 {
-  
+  //THIS FOR SOME REASON RUNS ONE EXTRA TIME WITHOUT TAKING INPUT. SUGGESTIONS? 
    while (1) //needs different logic than this maybe 
    {
       printf ("\n======================================================\n");
