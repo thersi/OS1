@@ -2,14 +2,18 @@
 #include <stdlib.h>
 #include <time.h>
 
+//NOTE: genreally, need to implement error catching for faulty user input
+
 struct alarm {
    int alarm_id; // !PLACEHOLDER! should maybe be PID of responsible child process. CHANGE LATER (use fork when initiating?)
    // should also have a ringtone or something here. 
    time_t time; 
 };
 
-int count = 0;
+int idCount = 0;
+int numOfElems = 0;
 struct alarm alarms[100]; //maximum of 100 alarms. Maybe better to have infinite, dunno if possible 
+//#define NUM(alarms) (sizeof(alarms) / sizeof(alarms[0])) //trying to dynamically determine length of 
 
 
 
@@ -59,50 +63,50 @@ void setAlarm(){ // could be boolean to return validation to main loop
    file = mktime(date);
 
    //create a alarm structure and add it to array of structs
-   
    struct alarm a;
    a.time = file;
-   a.alarm_id = count;
-   alarms[count] = a; 
-   count++;
+   a.alarm_id = idCount++;
+   alarms[numOfElems] = a; 
+   numOfElems++;
+   
    
     
    /* output results */
    printf("Timer set at %s\n",ctime(&file));
-
-   //add alarm to data structure of alarms
 }
 
 void deleteAlarm(){ // could be boolean to return validation to main loop 
    int number;
    printf("Type the number of the alarm you want to cancel: "); 
    scanf("%d", &number);
-   if (&alarms[number] != NULL){
-      //remove alarm from list 
-      //should make alarmid and index independent, to avoid "holes"? 
+   
+   for (int i = 0; i < numOfElems; i++) {
+      if (alarms[i].alarm_id == number){
+         for(int j=i; j<numOfElems; j++) {
+            alarms[j] = alarms[j + 1];
+            numOfElems--;
+            printf("Alarm %d deleted \n", number);
+         }
+      }
+      else {
+         printf("No alarm with the id %d exists\n", number);
+      }
    }
-   //DO SOMETHING HERE
-   // validation that number corresponds to an alarm. error if not 
-   // remove alarm from data structure
-   printf("Alarm %d deleted \n", number);
 }
 
-void listAlarms(){
+void listAlarms(){ // could be boolean to return validation to main loop 
    time_t t = time(NULL);
-   //printf("\nUTC:       %s \n", asctime(localtime(&t)));
    printf("\n%-20s %-10s\n", "UTC:",  asctime(localtime(&t)));
    printf("%-20s %-10s\n", "Alarm ID", "Time");
    printf("------------------------------------------------------\n");
-   for (int i = 0; i < count; i++)
+   for (int i = 0; i < numOfElems; i++)
    {
       if (&alarms[i] != NULL){
          printf("%-20d %-10s \n", alarms[i].alarm_id, ctime(&alarms[i].time));
          
       }
    }
-   
-   
-   //List all alarms in the data structure 
+
 }
 
 
@@ -116,7 +120,6 @@ int main()
       printf("s (schedule) | l (list) | c (cancel) | x (exit)\n");
       printf ("======================================================\n");
       char chr;
-      //int number;
       printf("Enter a character: ");
       scanf("%c", &chr);
       
@@ -135,7 +138,7 @@ int main()
             break;
 
          case 'x':
-            printf("good bye\n"); //function call here
+            printf("good bye\n");
             exit(0);
 
          // operator doesn't match any option
