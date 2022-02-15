@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 //NOTE: genreally, need to implement error catching for faulty user input
 
@@ -73,6 +74,16 @@ void setAlarm(){ // could be boolean to return validation to main loop
     
    /* output results */
    printf("Timer set at %s\n",ctime(&file));
+   pid_t pid = fork();
+   //printf("at %s\n",ctime(time(2)));
+   int diff= as.numeric(difftime(currenttime,a.time), units="secs");
+   printf("%d",diff);
+   //
+   sleep(diff);
+   //sleep(3);
+   printf("RINGGG");
+   exit(3);
+
 }
 
 void deleteAlarm(){ // could be boolean to return validation to main loop 
@@ -150,3 +161,5 @@ int main()
 
    return 0;
 }
+
+
