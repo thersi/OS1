@@ -72,7 +72,7 @@ void setAlarm(){ // could be boolean to return validation to main loop
    
     
    /* output results */
-   printf("Timer set at %s\n",ctime(&file));
+   printf("\nTimer set at %s",ctime(&file));
 }
 
 void deleteAlarm(){ // could be boolean to return validation to main loop 
@@ -84,14 +84,14 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
       if (alarms[i].alarm_id == number){
          for(int j=i; j<numOfElems; j++) {
             alarms[j] = alarms[j + 1];
-            numOfElems--;
-            printf("Alarm %d deleted \n", number);
          }
+         printf("\nAlarm %d deleted \n", number);
+         numOfElems--;
+         return; 
       }
-      else {
-         printf("No alarm with the id %d exists\n", number);
-      }
+      
    }
+   printf("\nNo alarm with the id %d exists\n", number);
 }
 
 void listAlarms(){ // could be boolean to return validation to main loop 
@@ -121,7 +121,7 @@ int main()
       printf ("======================================================\n");
       char chr;
       printf("Enter a character: ");
-      scanf("%c", &chr);
+      scanf("%s", &chr);
       
       
       switch (chr){
@@ -138,7 +138,7 @@ int main()
             break;
 
          case 'x':
-            printf("good bye\n");
+            printf("\nGood bye\n");
             exit(0);
 
          // operator doesn't match any option
