@@ -13,7 +13,7 @@ struct alarm {
    int alarm_id; // !PLACEHOLDER! should maybe be PID of responsible child process. CHANGE LATER (use fork when initiating?)
    // should also have a ringtone or something here. 
    time_t time; 
-   pid_t childPid;
+   int childPid;
    //int childPid;
 };
 
@@ -22,6 +22,19 @@ int numOfElems = 0;
 struct alarm alarms[100]; //maximum of 100 alarms. Maybe better to have infinite, dunno if possible 
 //#define NUM(alarms) (sizeof(alarms) / sizeof(alarms[0])) //trying to dynamically determine length of 
 
+/* NOT WORKING 
+void deleteByPid(int p){
+   for (int i = 0; i < numOfElems; i++) {
+      if (alarms[i].childPid == p) {
+         kill(p, 2);
+         for(int j=i; j<numOfElems; j++) {
+            alarms[j] = alarms[j + 1];
+         }
+         numOfElems--;
+         return;             
+      }
+   }
+}*/
 
 
 void setAlarm(){ // could be boolean to return validation to main loop 
@@ -78,7 +91,18 @@ void setAlarm(){ // could be boolean to return validation to main loop
       sleep(difftime(file, currenttime));
       printf("RIIIIING\n");
       // remove the alarm from list as it has terminated 
-      kill(getpid(), SIGTERM);
+      // DOES NOT WORK YET. ALARM SHOULD BE REMOVED FROM THE LIST
+      int p = getpid();
+      for (int i = 0; i < numOfElems; i++) {
+         if (alarms[i].childPid == p) {
+            for(int j=i; j<numOfElems; j++) {
+               alarms[j] = alarms[j + 1];
+            }
+         numOfElems--;
+         return;             
+         }
+      }
+      kill(p, 2);   
     }
 
    struct alarm a;
@@ -94,6 +118,7 @@ void setAlarm(){ // could be boolean to return validation to main loop
    printf("\nTimer set at %s",ctime(&file));
 }
 
+
 void deleteAlarm(){ // could be boolean to return validation to main loop 
    int number;
    printf("Type the number of the alarm you want to cancel: "); 
@@ -101,6 +126,7 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
    
    for (int i = 0; i < numOfElems; i++) {
       if (alarms[i].alarm_id == number){
+         kill(alarms[i].childPid, 2); //SHOULD KILL CHILD BUT KILLS PARENT AND NOT CHILD!! 
          for(int j=i; j<numOfElems; j++) {
             alarms[j] = alarms[j + 1];
          }
