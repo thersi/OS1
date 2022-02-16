@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <signal.h>
+
+
 
 //NOTE: genreally, need to implement error catching for faulty user input
 
@@ -8,6 +13,8 @@ struct alarm {
    int alarm_id; // !PLACEHOLDER! should maybe be PID of responsible child process. CHANGE LATER (use fork when initiating?)
    // should also have a ringtone or something here. 
    time_t time; 
+   pid_t childPid;
+   //int childPid;
 };
 
 int idCount = 0;
@@ -65,11 +72,23 @@ void setAlarm(){ // could be boolean to return validation to main loop
    }
 
    //create a alarm structure and add it to array of structs
+   pid_t pid = fork();
+    
+   if (pid == 0) {
+      sleep(difftime(file, currenttime));
+      printf("RIIIIING\n");
+      // remove the alarm from list as it has terminated 
+      kill(getpid(), SIGTERM);
+    }
+
    struct alarm a;
    a.time = file;
    a.alarm_id = idCount++;
+   a.childPid = getpid(); 
    alarms[numOfElems] = a; 
    numOfElems++;
+   printf("new child has pid %d", pid);
+   
     
    /* output results */
    printf("\nTimer set at %s",ctime(&file));
