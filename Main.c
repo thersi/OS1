@@ -20,7 +20,13 @@ struct alarm alarms[100]; //maximum of 100 alarms. Maybe better to have infinite
 void setAlarm(){ // could be boolean to return validation to main loop 
    //TAKE DATE AS INPUT TOO? 
 
-   int hrs, mins, seconds,i=0;
+   int year, month, day, hrs, mins, seconds,i=0;
+   printf("Enter Year: ");
+   scanf("%d",&year);
+   printf("Enter Month: ");
+   scanf("%d",&month);
+   printf("Enter Day: ");
+   scanf("%d",&day);
    printf("Enter Hours: ");
    scanf("%d",&hrs);
    printf("Enter Minute: ");
@@ -47,20 +53,16 @@ void setAlarm(){ // could be boolean to return validation to main loop
    date->tm_sec = seconds;
    date->tm_min = mins;
    date->tm_hour = hrs;
-   date->tm_mday = daynow;
-   if (hrs < hournow) {
-      date->tm_mday = daynow + 1;
-   }
-   if (hrs == hournow && mins < minnow) {
-      date->tm_mday = daynow + 1;
-   }
-   if (hrs == hournow && mins == minnow && seconds < secnow) {
-      date->tm_mday = daynow + 1;
-   }
-   date->tm_mon = monthnow;
-   date->tm_year = yearnow;
+   date->tm_mday = day;
+   date->tm_mon = month - 1;
+   date->tm_year = year - 1900;
    /* convert the structure to a time_t value */
    file = mktime(date);
+
+   if (difftime(file, currenttime) < 0) {
+      printf("Cannot set date in the past.");
+      return;
+   }
 
    //create a alarm structure and add it to array of structs
    struct alarm a;
@@ -68,8 +70,6 @@ void setAlarm(){ // could be boolean to return validation to main loop
    a.alarm_id = idCount++;
    alarms[numOfElems] = a; 
    numOfElems++;
-   
-   
     
    /* output results */
    printf("\nTimer set at %s",ctime(&file));
