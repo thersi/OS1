@@ -3,6 +3,7 @@
 #include <time.h>
 #include <unistd.h>
 
+
 //NOTE: genreally, need to implement error catching for faulty user input
 
 struct alarm {
@@ -74,15 +75,34 @@ void setAlarm(){ // could be boolean to return validation to main loop
     
    /* output results */
    printf("Timer set at %s\n",ctime(&file));
-   pid_t pid = fork();
+   fork();
    //printf("at %s\n",ctime(time(2)));
-   int diff= as.numeric(difftime(currenttime,a.time), units="secs");
-   printf("%d",diff);
-   //
-   sleep(diff);
+   double diff=difftime(currenttime,a.time);
+   //printf("%d",diff);
+    __pid_t pid = fork();
+
+    if (pid > 0) {
+        printf("\n");
+    }
+    else if (pid == 0) {
+        sleep(3);
+        printf("\n");
+        // Alarm rings after sleeptime-seconds has passed
+        printf("RINGGG!");
+        printf("\n");
+        exit(0);
+    }
+   
+   //sleep(diff);
    //sleep(3);
-   printf("RINGGG");
-   exit(3);
+   //sleep(3);
+   //system("alarm1.mp3");
+   //fopen("alarm1.mp3","rb");
+   //system("alarm1.mp3");
+    //system("mpg123 alarm1.mp3");
+    //system("mpg123 alarm1.mp3");
+    //printf("RINGGG");
+
 
 }
 
@@ -105,18 +125,19 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
    }
 }
 
-void listAlarms(){ // could be boolean to return validation to main loop 
-   time_t t = time(NULL);
-   printf("\n%-20s %-10s\n", "UTC:",  asctime(localtime(&t)));
-   printf("%-20s %-10s\n", "Alarm ID", "Time");
-   printf("------------------------------------------------------\n");
-   for (int i = 0; i < numOfElems; i++)
-   {
-      if (&alarms[i] != NULL){
-         printf("%-20d %-10s \n", alarms[i].alarm_id, ctime(&alarms[i].time));
-         
-      }
-   }
+void listAlarms() { // could be boolean to return validation to main loop
+    time_t t = time(NULL);
+    printf("\n%-20s %-10s\n", "UTC:", asctime(localtime(&t)));
+    printf("%-20s %-10s\n", "Alarm ID", "Time");
+    printf("------------------------------------------------------\n");
+    for (int i = 0; i < numOfElems; i++) {
+        if (&alarms[i] != NULL) {
+            printf("%-20d %-10s \n", alarms[i].alarm_id, ctime(&alarms[i].time));
+
+        }
+    }
+
+
 
 }
 
@@ -161,5 +182,7 @@ int main()
 
    return 0;
 }
+
+
 
 
