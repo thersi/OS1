@@ -18,6 +18,7 @@ struct alarm {
    int pidNumber;
 };
 
+int zombies = 0;
 int idCount = 0;
 int numOfElems = 0;
 struct alarm alarms[100]; //maximum of 100 alarms. Maybe better to have infinite, dunno if possible 
@@ -132,6 +133,9 @@ void setAlarm(){ // could be boolean to return validation to main loop
       //deleteAlarmByPid(p);
       kill(p, 2);
       exit(3);
+      /*if (WIFEXITED(status)){
+         waitpid(pid, &status, 0);
+      } */
 
     }
    /* output results */
@@ -150,6 +154,7 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
    for (int i = 0; i < numOfElems; i++) {
       if (alarms[i].alarm_id == number){
          kill(alarms[i].childPid, 2); 
+         zombies++;
          for(int j=i; j<numOfElems; j++) {
             alarms[j] = alarms[j + 1];
          }
@@ -189,7 +194,12 @@ int main()
       char chr;
       printf("Enter a character: ");
       scanf("%s", &chr);
-
+      //killing the zombies
+      if (zombies > 0) {
+         for (int i=zombies; i<0; i--) {
+            waitpid(-1, NULL, WNOHANG);
+         }
+      }
       
       switch (chr){
          case 's':
