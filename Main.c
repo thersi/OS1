@@ -118,6 +118,25 @@ void setAlarm(){ // could be boolean to return validation to main loop
     
    /* output results */
    printf("\nTimer set at %s",ctime(&file));
+    //printf("at %s\n",ctime(time(2)));
+   // int diff= as.numeric(difftime(currenttime,a.time), units="secs");
+    //printf("%d",diff);
+    //
+    //sleep(diff);
+    //printf("%d",diff);
+
+
+
+    //sleep(diff);
+    //sleep(3);
+    //sleep(3);
+   // exit(3);
+    //system("alarm1.mp3");
+    //fopen("alarm1.mp3","rb");
+    //system("alarm1.mp3");
+    //system("mpg123 alarm1.mp3");
+    //system("mpg123 alarm1.mp3");
+    //printf("RINGGG");
 }
 
 
