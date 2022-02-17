@@ -10,36 +10,18 @@
 //NOTE: genreally, need to implement error catching for faulty user input
 
 struct alarm {
-   int alarm_id; // !PLACEHOLDER! should maybe be PID of responsible child process. CHANGE LATER (use fork when initiating?)
+   int alarm_id; 
    // should also have a ringtone or something here. 
    time_t time; 
    pid_t childPid;
    int pidNumber;
-   //int childPid;
 };
 
 int idCount = 0;
 int numOfElems = 0;
 struct alarm alarms[100]; //maximum of 100 alarms. Maybe better to have infinite, dunno if possible 
-//#define NUM(alarms) (sizeof(alarms) / sizeof(alarms[0])) //trying to dynamically determine length of 
-
-/* NOT WORKING 
-void deleteByPid(int p){
-   for (int i = 0; i < numOfElems; i++) {
-      if (alarms[i].childPid == p) {
-         kill(p, 2);
-         for(int j=i; j<numOfElems; j++) {
-            alarms[j] = alarms[j + 1];
-         }
-         numOfElems--;
-         return;             
-      }
-   }
-}*/
-
 
 void setAlarm(){ // could be boolean to return validation to main loop 
-   //TAKE DATE AS INPUT TOO? 
 
    int year, month, day, hrs, mins, seconds,i=0;
    printf("Enter Year: ");
@@ -87,7 +69,6 @@ void setAlarm(){ // could be boolean to return validation to main loop
 
    //create a alarm structure and add it to array of structs
    pid_t pid = fork();
-    
    if (pid == 0) {
       sleep(difftime(file, currenttime));
       printf("RIIIIING\n");
@@ -118,25 +99,6 @@ void setAlarm(){ // could be boolean to return validation to main loop
     
    /* output results */
    printf("\nTimer set at %s",ctime(&file));
-    //printf("at %s\n",ctime(time(2)));
-   // int diff= as.numeric(difftime(currenttime,a.time), units="secs");
-    //printf("%d",diff);
-    //
-    //sleep(diff);
-    //printf("%d",diff);
-
-
-
-    //sleep(diff);
-    //sleep(3);
-    //sleep(3);
-   // exit(3);
-    //system("alarm1.mp3");
-    //fopen("alarm1.mp3","rb");
-    //system("alarm1.mp3");
-    //system("mpg123 alarm1.mp3");
-    //system("mpg123 alarm1.mp3");
-    //printf("RINGGG");
 }
 
 
@@ -147,7 +109,7 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
    
    for (int i = 0; i < numOfElems; i++) {
       if (alarms[i].alarm_id == number){
-         kill(alarms[i].childPid, 2); //SHOULD KILL CHILD BUT KILLS PARENT AND NOT CHILD!! 
+         kill(alarms[i].childPid, 2); 
          for(int j=i; j<numOfElems; j++) {
             alarms[j] = alarms[j + 1];
          }
@@ -155,7 +117,6 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
          numOfElems--;
          return; 
       }
-      
    }
    printf("\nNo alarm with the id %d exists\n", number);
 }
@@ -172,14 +133,12 @@ void listAlarms(){ // could be boolean to return validation to main loop
          
       }
    }
-
 }
 
 
 int main()
 {
-  //THIS FOR SOME REASON RUNS ONE EXTRA TIME WITHOUT TAKING INPUT. SUGGESTIONS? 
-   while (1) //needs different logic than this maybe 
+   while (1)
    {
       printf ("\n======================================================\n");
       printf("Select one of the following operations:\n");
@@ -188,7 +147,6 @@ int main()
       char chr;
       printf("Enter a character: ");
       scanf("%s", &chr);
-      
       
       switch (chr){
          case 's':
