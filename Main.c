@@ -21,6 +21,24 @@ int idCount = 0;
 int numOfElems = 0;
 struct alarm alarms[100]; //maximum of 100 alarms. Maybe better to have infinite, dunno if possible 
 
+
+void deleteAlarmByPid(int pid){ // could be boolean to return validation to main loop 
+   printf("kommer inn i metoden\n");
+   for (int i = 0; i <= numOfElems; i++) {
+      if (alarms[i].pidNumber== pid){
+         for(int j=i; j<=numOfElems; j++) {
+            alarms[j] = alarms[j + 1];
+         }
+         printf("\nAlarm %d deleted \n", pid);
+         numOfElems--;
+         printf("num elems %d: \n", numOfElems);
+         
+         return;
+      }
+   }
+   printf("\nNo alarm with the id %d exists\n", pid);
+}
+
 void setAlarm(){ // could be boolean to return validation to main loop 
 
    int year, month, day, hrs, mins, seconds,i=0;
@@ -69,24 +87,6 @@ void setAlarm(){ // could be boolean to return validation to main loop
 
    //create a alarm structure and add it to array of structs
    pid_t pid = fork();
-   if (pid == 0) {
-      sleep(difftime(file, currenttime));
-      printf("RIIIIING\n");
-      // remove the alarm from list as it has terminated 
-      // DOES NOT WORK YET. ALARM SHOULD BE REMOVED FROM THE LIST
-      int p = getpid();
-      for (int i = 0; i < numOfElems; i++) {
-         if (alarms[i].childPid == p) {
-            for(int j=i; j<numOfElems; j++) {
-               alarms[j] = alarms[j + 1];
-            }
-         numOfElems--;
-         return;             
-         }
-      }
-      kill(p, 2);   
-    }
-
    struct alarm a;
    a.time = file;
    a.alarm_id = idCount++;
@@ -95,10 +95,37 @@ void setAlarm(){ // could be boolean to return validation to main loop
    alarms[numOfElems] = a; 
    numOfElems++;
    printf("new child has pid %d", pid);
-   
-    
+
+   if (pid == 0) {
+      sleep(difftime(file, currenttime));
+      printf("\nRIIIIING\n");
+      // remove the alarm from list as it has terminated 
+      // DOES NOT WORK YET. ALARM SHOULD BE REMOVED FROM THE LIST
+      int p = getpid();
+      /*int i;
+      for (i = 0; i <= getNumElements(); i++) {
+         printf("\nkommer inn i første for \n");
+         if (alarms[i].childPid == p) {
+            deleteAlarmById(alarms[i].alarm_id);
+            printf("\nkommer inn i if\n");
+            for(j=i; j<getNumElements(); j++) {
+               printf("\nkommen inn i andre for \n");
+               alarms[j] = alarms[j + 1];
+            }
+            numOfElems--;
+         }
+      } */
+      //int pp = getppid();
+      //deleteAlarmByPid(p);
+      kill(p, 2);
+      exit(3);
+
+    }
    /* output results */
+
    printf("\nTimer set at %s",ctime(&file));
+
+   return;
 }
 
 
@@ -140,6 +167,8 @@ int main()
 {
    while (1)
    {
+      printf("number of elems are: %d", numOfElems);
+      
       printf ("\n======================================================\n");
       printf("Select one of the following operations:\n");
       printf("s (schedule) | l (list) | c (cancel) | x (exit)\n");
@@ -147,6 +176,7 @@ int main()
       char chr;
       printf("Enter a character: ");
       scanf("%s", &chr);
+
       
       switch (chr){
          case 's':
