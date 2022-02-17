@@ -197,7 +197,7 @@ int main()
       //killing the zombies
       if (zombies > 0) {
          for (int i=zombies; i<0; i--) {
-            waitpid(-1, NULL, WNOHANG);
+            waitpid(-1, NULL, WNOHANG); // nå drepes ingen zombier, noe er feil
          }
       }
       
