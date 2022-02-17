@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <wait.h>
 
 
 
@@ -69,11 +70,16 @@ void setAlarm(){ // could be boolean to return validation to main loop
 
    //create a alarm structure and add it to array of structs
    pid_t pid = fork();
+   int status;
    if (pid == 0) {
       sleep(difftime(file, currenttime));
       printf("RIIIIING\n");
+      /*if (wait(&status) == pid && WIFEXITED(status)){
+         printf ("Exit status: %d\n", WEXITSTATUS(status));
+      }*/
       // remove the alarm from list as it has terminated 
       // DOES NOT WORK YET. ALARM SHOULD BE REMOVED FROM THE LIST
+      printf("Parent is told to wait");
       int p = getpid();
       for (int i = 0; i < numOfElems; i++) {
          if (alarms[i].childPid == p) {
@@ -86,6 +92,10 @@ void setAlarm(){ // could be boolean to return validation to main loop
       }
       kill(p, 2);   
     }
+   else {
+      waitpid(pid, &status, 0);
+      printf("Waiting");
+   }
 
    struct alarm a;
    a.time = file;
