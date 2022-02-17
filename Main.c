@@ -167,7 +167,6 @@ int main()
 {
    while (1)
    {
-      printf("number of elems are: %d", numOfElems);
       
       printf ("\n======================================================\n");
       printf("Select one of the following operations:\n");
@@ -177,6 +176,18 @@ int main()
       printf("Enter a character: ");
       scanf("%s", &chr);
 
+      if (numOfElems >0){
+         time_t currenttime = time(NULL);
+         struct tm *tm_struct = localtime(&currenttime);
+         for (int i = 0; i < numOfElems; i++) {
+            if (difftime(alarms[i].time, currenttime) <= 0){
+               for(int j=i; j < numOfElems; j++) {
+                  alarms[j] = alarms[j + 1];
+               }
+               numOfElems--; 
+            }
+         }
+      }
       
       switch (chr){
          case 's':
