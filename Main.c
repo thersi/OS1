@@ -13,7 +13,8 @@ struct alarm {
    int alarm_id; // !PLACEHOLDER! should maybe be PID of responsible child process. CHANGE LATER (use fork when initiating?)
    // should also have a ringtone or something here. 
    time_t time; 
-   int childPid;
+   pid_t childPid;
+   int pidNumber;
    //int childPid;
 };
 
@@ -108,7 +109,8 @@ void setAlarm(){ // could be boolean to return validation to main loop
    struct alarm a;
    a.time = file;
    a.alarm_id = idCount++;
-   a.childPid = getpid(); 
+   a.childPid = pid;
+   a.pidNumber = getpid(); 
    alarms[numOfElems] = a; 
    numOfElems++;
    printf("new child has pid %d", pid);
