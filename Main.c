@@ -9,9 +9,8 @@
 
 struct alarm {
    int alarm_id; 
-   // should also have a ringtone or something here. 
    time_t time; 
-   pid_t childPid;
+   pid_t childPid; //only need one of this and pidnumber. clean up 
    int pidNumber;
 };
 
@@ -20,24 +19,7 @@ int numOfElems = 0;
 struct alarm alarms[100]; 
 
 
-void deleteAlarmByPid(int pid){ // could be boolean to return validation to main loop 
-   printf("kommer inn i metoden\n");
-   for (int i = 0; i <= numOfElems; i++) {
-      if (alarms[i].pidNumber== pid){
-         for(int j=i; j<=numOfElems; j++) {
-            alarms[j] = alarms[j + 1];
-         }
-         printf("\nAlarm %d deleted \n", pid);
-         numOfElems--;
-         printf("num elems %d: \n", numOfElems);
-         
-         return;
-      }
-   }
-   printf("\nNo alarm with the id %d exists\n", pid);
-}
-
-void setAlarm(){ // could be boolean to return validation to main loop 
+void setAlarm(){ 
 
    int year, month, day, hrs, mins, seconds,i=0;
    printf("Enter Year: ");
@@ -123,7 +105,7 @@ void setAlarm(){ // could be boolean to return validation to main loop
 }
 
 
-void deleteAlarm(){ // could be boolean to return validation to main loop 
+void deleteAlarm(){ 
    int number;
    printf("Type the number of the alarm you want to cancel: "); 
    scanf("%d", &number);
@@ -142,7 +124,7 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
    printf("\nNo alarm with the id %d exists\n", number);
 }
 
-void listAlarms(){ // could be boolean to return validation to main loop 
+void listAlarms(){ 
    time_t t = time(NULL);
    printf("\n%-20s %-10s\n", "UTC:",  asctime(localtime(&t)));
    if (numOfElems == 0){
