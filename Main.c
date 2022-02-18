@@ -99,24 +99,26 @@ void setAlarm(){ // could be boolean to return validation to main loop
    if (pid == 0) {
       sleep(difftime(file, currenttime));
       printf("\nRIIIIING\n");
-      // remove the alarm from list as it has terminated 
-      // DOES NOT WORK YET. ALARM SHOULD BE REMOVED FROM THE LIST
       int p = getpid();
-      /*int i;
-      for (i = 0; i <= getNumElements(); i++) {
-         printf("\nkommer inn i første for \n");
-         if (alarms[i].childPid == p) {
-            deleteAlarmById(alarms[i].alarm_id);
-            printf("\nkommer inn i if\n");
-            for(j=i; j<getNumElements(); j++) {
-               printf("\nkommen inn i andre for \n");
-               alarms[j] = alarms[j + 1];
-            }
-            numOfElems--;
-         }
-      } */
-      //int pp = getppid();
-      //deleteAlarmByPid(p);
+
+      char *exPath;
+      char *ringtonePath = "resources/ringtone.mp3";
+
+      // Play ringtone
+      #if __APPLE__
+      exPath = "/usr/bin/afplay";
+
+      execl(exPath, exPath, ringtonePath, (char *)NULL);
+      #elif __linux__
+      // NOTE: This is not tested, due to MacOS being the OS of choice
+      exPath = "/usr/bin/mpg123";
+
+      execl(exPath, exPath, ringtonePath, (char *)NULL);
+      #endif
+
+      //exit(EXIT_SUCCESS);
+
+
       kill(p, 2);
       exit(3);
 
