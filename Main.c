@@ -84,12 +84,18 @@ void setAlarm(){
       // sounding the alarm ringtone: 
       char *ringtonePath = "resources/ringtone.mp3";
       char *exPath;
-      #if __linux__
+      // playing the ringtones, based on the users OS 
+      #if __linux__ 
       exPath = "/usr/bin/mpg123";
       execl(exPath, exPath, ringtonePath, (char *)NULL);
       #elif __APPLE__
       exPath = "/usr/bin/afplay";
       execl(exPath, exPath, ringtonePath, (char *)NULL);
+      #elif __unix__
+      exPath = "/usr/bin/mpg123";
+      execl(exPath, exPath, ringtonePath, (char *)NULL);
+      #elif _WIN32
+      printf("No rintone available for windows users :'( "); 
       #endif
 
       //Killing the process after ringing
