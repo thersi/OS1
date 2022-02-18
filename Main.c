@@ -5,8 +5,6 @@
 #include <sys/types.h>
 #include <signal.h>
 
-
-
 //NOTE: genreally, need to implement error catching for faulty user input
 
 struct alarm {
@@ -19,7 +17,7 @@ struct alarm {
 
 int idCount = 0;
 int numOfElems = 0;
-struct alarm alarms[100]; //maximum of 100 alarms. Maybe better to have infinite, dunno if possible 
+struct alarm alarms[100]; 
 
 
 void deleteAlarmByPid(int pid){ // could be boolean to return validation to main loop 
@@ -94,31 +92,25 @@ void setAlarm(){ // could be boolean to return validation to main loop
    a.pidNumber = getpid(); 
    alarms[numOfElems] = a; 
    numOfElems++;
-   printf("new child has pid %d", pid);
+   //printf("new child has pid %d", pid);
 
    if (pid == 0) {
       sleep(difftime(file, currenttime));
       printf("\nRIIIIING\n");
       int p = getpid();
 
-      char *exPath;
+      // sounding the alarm ringtone: 
       char *ringtonePath = "resources/ringtone.mp3";
-
-      // Play ringtone
-      #if __APPLE__
-      exPath = "/usr/bin/afplay";
-
-      execl(exPath, exPath, ringtonePath, (char *)NULL);
-      #elif __linux__
-      // NOTE: This is not tested, due to MacOS being the OS of choice
+      char *exPath;
+      #if __linux__
       exPath = "/usr/bin/mpg123";
-
+      execl(exPath, exPath, ringtonePath, (char *)NULL);
+      #elif __APPLE__
+      exPath = "/usr/bin/afplay";
       execl(exPath, exPath, ringtonePath, (char *)NULL);
       #endif
 
-      //exit(EXIT_SUCCESS);
-
-
+      //Killing the process after ringing
       kill(p, 2);
       exit(3);
 
@@ -153,6 +145,11 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
 void listAlarms(){ // could be boolean to return validation to main loop 
    time_t t = time(NULL);
    printf("\n%-20s %-10s\n", "UTC:",  asctime(localtime(&t)));
+   if (numOfElems == 0){
+      
+      printf("No active alarms to show\n");
+      return;
+   }
    printf("%-20s %-10s\n", "Alarm ID", "Time");
    printf("------------------------------------------------------\n");
    for (int i = 0; i < numOfElems; i++)
@@ -208,7 +205,7 @@ int main()
             printf("\nGood bye\n");
             exit(0);
 
-         // operator doesn't match any option
+         // input doesn't match any option
          default:
             printf("Error! operator is not correct\n");
             break;
