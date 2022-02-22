@@ -26,16 +26,46 @@ void setAlarm(){
    int year, month, day, hrs, mins, seconds,i=0;
    printf("Enter Year: ");
    scanf("%d",&year);
+   while (year < 2022) {
+      printf("Cannot enter year in the past.\n");
+      printf("Enter Year: ");
+      scanf("%d",&year);
+   }
    printf("Enter Month: ");
    scanf("%d",&month);
+   while (month < 1 || month > 12) {
+      printf("Enter month between 1 and 12.\n");
+      printf("Enter Month: ");
+      scanf("%d",&month);
+   }
    printf("Enter Day: ");
    scanf("%d",&day);
+   while (day < 1 || day > 31) {
+      printf("Enter day between 1 and 31.\n");
+      printf("Enter Day: ");
+      scanf("%d",&day);
+   }
    printf("Enter Hours: ");
    scanf("%d",&hrs);
+   while (hrs < 0 || hrs > 23) {
+      printf("Enter hours between 00 and 23.\n");
+      printf("Enter Hours: ");
+      scanf("%d",&hrs);
+   }
    printf("Enter Minute: ");
    scanf("%d",&mins);
+   while (mins < 0 || mins > 59) {
+      printf("Enter minutes between 0 and 59.\n");
+      printf("Enter Minute: ");
+      scanf("%d",&mins);
+   }
    printf("Enter Second: ");
    scanf("%d",&seconds);
+   while (seconds < 0 || seconds > 59) {
+      printf("Enter seconds between 0 and 59.\n");
+      printf("Enter Second: ");
+      scanf("%d",&seconds);
+   }
 
    time_t now,file;
    struct tm *date;
@@ -183,7 +213,6 @@ int main()
          }
       }
 
-      printf("r %d", zombies);
       while (zombies > 0) {
          waitpid(-1, NULL, WNOHANG); // nå drepes ingen zombier, noe er feil
          zombies--;
