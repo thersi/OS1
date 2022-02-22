@@ -6,23 +6,29 @@
 #include <signal.h>
 #include <wait.h>
 
-//NOTE: genreally, need to implement error catching for faulty user input
 
-struct alarm {
+struct alarm { // alarm-structure to assign data and store in an array
    int alarm_id; 
    time_t time; 
-   pid_t childPid; //only need one of this and pidnumber. clean up 
+   pid_t childPid;
    int pidNumber;
 };
 
-int zombies = 0;
-int idCount = 0;
-int numOfElems = 0;
-struct alarm alarms[100]; 
+int zombies = 0; // integer to keep track of zombies to kill
+int idCount = 0; // integer to keep track of what id an alarm should get
+int numOfElems = 0; // integer to keep track of number of alarms added to the alarm-array
+int spaceLeft = 100; // integer to keep track if all spaces in array is taken
+struct alarm alarms[100]; // array to keep the alarms
 
 
 void setAlarm(){ 
+   // checks if array is full and refuses input if no space left
+   if (spaceLeft == 0) {
+      printf("No more space for alarms:(");
+      return;
+   }
 
+   // scans input and validates it to set an alarm at chosen time & date
    int year, month, day, hrs, mins, seconds,i=0;
    printf("Enter Year: ");
    scanf("%d",&year);
@@ -107,6 +113,7 @@ void setAlarm(){
    a.pidNumber = getpid(); 
    alarms[numOfElems] = a; 
    numOfElems++;
+   spaceLeft--;
    //printf("new child has pid %d", pid);
 
    if (pid == 0) {
@@ -151,8 +158,8 @@ void deleteAlarm(){
    
    for (int i = 0; i < numOfElems; i++) {
       if (alarms[i].alarm_id == number){
-         kill(alarms[i].childPid, 2); 
-         zombies++;
+         kill(alarms[i].childPid, 2); // kills child process
+         zombies++; // one more zombie to kill
          for(int j=i; j<numOfElems; j++) {
             alarms[j] = alarms[j + 1];
          }
@@ -176,7 +183,7 @@ void listAlarms(){
    printf("------------------------------------------------------\n");
    for (int i = 0; i < numOfElems; i++)
    {
-      if (&alarms[i] != NULL){
+      if (&alarms[i] != NULL){ // displayes all alarms in the array
          printf("%-20d %-10s \n", alarms[i].alarm_id, ctime(&alarms[i].time));
          
       }
@@ -196,28 +203,26 @@ int main()
       char chr;
       printf("Enter a character: ");
       scanf("%s", &chr);
-      //killing the zombies
 
-      if (numOfElems >0){
+      if (numOfElems >0){ // removes alarms that have rung from the displayed list
          time_t currenttime = time(NULL);
          struct tm *tm_struct = localtime(&currenttime);
          for (int i = 0; i < numOfElems; i++) {
-            if (difftime(alarms[i].time, currenttime) <= 0){
+            if (difftime(alarms[i].time, currenttime) <= 0){ // checks that the alarm in the list is in the past, and removes it if so
                for(int j=i; j < numOfElems; j++) {
                   alarms[j] = alarms[j + 1];
                }
                i--;
                numOfElems--;
-               zombies++; 
+               zombies++; // counts one zombie that needs to be killed
             }
          }
       }
 
       while (zombies > 0) {
-         waitpid(-1, NULL, WNOHANG); // nå drepes ingen zombier, noe er feil
+         waitpid(-1, NULL, WNOHANG); // kills all registered zombies
          zombies--;
       }
-      //waitpid(-1, NULL, WNOHANG);
       
       switch (chr){
          case 's':
