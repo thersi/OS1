@@ -6,42 +6,22 @@
 #include <signal.h>
 #include <wait.h>
 
-
-
 //NOTE: genreally, need to implement error catching for faulty user input
 
 struct alarm {
    int alarm_id; 
-   // should also have a ringtone or something here. 
    time_t time; 
-   pid_t childPid;
+   pid_t childPid; //only need one of this and pidnumber. clean up 
    int pidNumber;
 };
 
 int zombies = 0;
 int idCount = 0;
 int numOfElems = 0;
-struct alarm alarms[100]; //maximum of 100 alarms. Maybe better to have infinite, dunno if possible 
+struct alarm alarms[100]; 
 
 
-void deleteAlarmByPid(int pid){ // could be boolean to return validation to main loop 
-   printf("kommer inn i metoden\n");
-   for (int i = 0; i <= numOfElems; i++) {
-      if (alarms[i].pidNumber== pid){
-         for(int j=i; j<=numOfElems; j++) {
-            alarms[j] = alarms[j + 1];
-         }
-         printf("\nAlarm %d deleted \n", pid);
-         numOfElems--;
-         printf("num elems %d: \n", numOfElems);
-         
-         return;
-      }
-   }
-   printf("\nNo alarm with the id %d exists\n", pid);
-}
-
-void setAlarm(){ // could be boolean to return validation to main loop 
+void setAlarm(){ 
 
    int year, month, day, hrs, mins, seconds,i=0;
    printf("Enter Year: ");
@@ -97,46 +77,33 @@ void setAlarm(){ // could be boolean to return validation to main loop
    a.pidNumber = getpid(); 
    alarms[numOfElems] = a; 
    numOfElems++;
-   printf("new child has pid %d", pid);
+   //printf("new child has pid %d", pid);
 
    if (pid == 0) {
       sleep(difftime(file, currenttime));
       printf("\nRIIIIING\n");
-      zombies++;
-      // remove the alarm from list as it has terminated 
-      // DOES NOT WORK YET. ALARM SHOULD BE REMOVED FROM THE LIST
       int p = getpid();
-      /*int i;
-      for (i = 0; i <= getNumElements(); i++) {
-         printf("\nkommer inn i første for \n");
-         if (alarms[i].childPid == p) {
-            deleteAlarmById(alarms[i].alarm_id);
-            printf("\nkommer inn i if\n");
-            for(j=i; j<getNumElements(); j++) {
-               printf("\nkommen inn i andre for \n");
-               alarms[j] = alarms[j + 1];
-            }
-            numOfElems--;
-         }
-      }
-      //waitpid(pid, &status, 0);
-      kill(p, 2);  
-      if (wait(&status) == pid && WIFEXITED(status)){
-         printf ("Exit status: %d\n", WEXITSTATUS(status));
-      } 
-    }
-   /*else {
-      waitpid(pid, &status, 0);
-      printf("Waiting");
-   }*/
-      //int pp = getppid();
-      //deleteAlarmByPid(p);
-      zombies++;
+
+      // sounding the alarm ringtone: 
+      char *ringtonePath = "resources/ringtone.mp3";
+      char *exPath;
+      // playing the ringtones, based on the users OS 
+      #if __linux__ 
+      exPath = "/usr/bin/mpg123";
+      execl(exPath, exPath, ringtonePath, (char *)NULL);
+      #elif __APPLE__
+      exPath = "/usr/bin/afplay";
+      execl(exPath, exPath, ringtonePath, (char *)NULL);
+      #elif __unix__
+      exPath = "/usr/bin/mpg123";
+      execl(exPath, exPath, ringtonePath, (char *)NULL);
+      #elif _WIN32
+      printf("No rintone available for windows users :'( "); 
+      #endif
+
+      //Killing the process after ringing
       kill(p, 2);
       exit(3);
-      /*if (WIFEXITED(status)){
-         waitpid(pid, &status, 0);
-      } */
 
     }
    /* output results */
@@ -147,7 +114,7 @@ void setAlarm(){ // could be boolean to return validation to main loop
 }
 
 
-void deleteAlarm(){ // could be boolean to return validation to main loop 
+void deleteAlarm(){ 
    int number;
    printf("Type the number of the alarm you want to cancel: "); 
    scanf("%d", &number);
@@ -167,9 +134,14 @@ void deleteAlarm(){ // could be boolean to return validation to main loop
    printf("\nNo alarm with the id %d exists\n", number);
 }
 
-void listAlarms(){ // could be boolean to return validation to main loop 
+void listAlarms(){ 
    time_t t = time(NULL);
    printf("\n%-20s %-10s\n", "UTC:",  asctime(localtime(&t)));
+   if (numOfElems == 0){
+      
+      printf("No active alarms to show\n");
+      return;
+   }
    printf("%-20s %-10s\n", "Alarm ID", "Time");
    printf("------------------------------------------------------\n");
    for (int i = 0; i < numOfElems; i++)
@@ -186,7 +158,6 @@ int main()
 {
    while (1)
    {
-      printf("number of elems are: %d", numOfElems);
       
       printf ("\n======================================================\n");
       printf("Select one of the following operations:\n");
@@ -196,13 +167,28 @@ int main()
       printf("Enter a character: ");
       scanf("%s", &chr);
       //killing the zombies
-      printf("r %d", zombies);
-      if (zombies > 0) {
-         for (int i=zombies; i=0; i--) {
-            waitpid(-1, NULL, WNOHANG); // nå drepes ingen zombier, noe er feil
+
+      if (numOfElems >0){
+         time_t currenttime = time(NULL);
+         struct tm *tm_struct = localtime(&currenttime);
+         for (int i = 0; i < numOfElems; i++) {
+            if (difftime(alarms[i].time, currenttime) <= 0){
+               for(int j=i; j < numOfElems; j++) {
+                  alarms[j] = alarms[j + 1];
+               }
+               i--;
+               numOfElems--;
+               zombies++; 
+            }
          }
       }
-      waitpid(-1, NULL, WNOHANG);
+
+      printf("r %d", zombies);
+      while (zombies > 0) {
+         waitpid(-1, NULL, WNOHANG); // nå drepes ingen zombier, noe er feil
+         zombies--;
+      }
+      //waitpid(-1, NULL, WNOHANG);
       
       switch (chr){
          case 's':
@@ -221,7 +207,7 @@ int main()
             printf("\nGood bye\n");
             exit(0);
 
-         // operator doesn't match any option
+         // input doesn't match any option
          default:
             printf("Error! operator is not correct\n");
             break;
