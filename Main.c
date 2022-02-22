@@ -102,9 +102,9 @@ void setAlarm(){ // could be boolean to return validation to main loop
    if (pid == 0) {
       sleep(difftime(file, currenttime));
       printf("\nRIIIIING\n");
+      zombies++;
       // remove the alarm from list as it has terminated 
       // DOES NOT WORK YET. ALARM SHOULD BE REMOVED FROM THE LIST
-      printf("Parent is told to wait");
       int p = getpid();
       /*int i;
       for (i = 0; i <= getNumElements(); i++) {
@@ -131,6 +131,7 @@ void setAlarm(){ // could be boolean to return validation to main loop
    }*/
       //int pp = getppid();
       //deleteAlarmByPid(p);
+      zombies++;
       kill(p, 2);
       exit(3);
       /*if (WIFEXITED(status)){
@@ -195,11 +196,13 @@ int main()
       printf("Enter a character: ");
       scanf("%s", &chr);
       //killing the zombies
+      printf("r %d", zombies);
       if (zombies > 0) {
-         for (int i=zombies; i<0; i--) {
+         for (int i=zombies; i=0; i--) {
             waitpid(-1, NULL, WNOHANG); // nå drepes ingen zombier, noe er feil
          }
       }
+      waitpid(-1, NULL, WNOHANG);
       
       switch (chr){
          case 's':
