@@ -4,14 +4,13 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <signal.h>
-#include <wait.h>
+#include <sys/wait.h>
 
 
 struct alarm { // alarm-structure to assign data and store in an array
    int alarm_id; 
    time_t time; 
    pid_t childPid;
-   int pidNumber;
 };
 
 int zombies = 0; // integer to keep track of zombies to kill
@@ -32,7 +31,7 @@ void setAlarm(){
    int year, month, day, hrs, mins, seconds,i=0;
    printf("Enter Year: ");
    scanf("%d",&year);
-   while (year < 2022) {
+   while (year < 2022) { //Burde ikke hardkode dette årstallet
       printf("Cannot enter year in the past.\n");
       printf("Enter Year: ");
       scanf("%d",&year);
@@ -105,16 +104,13 @@ void setAlarm(){
 
    //create a alarm structure and add it to array of structs
    pid_t pid = fork();
-   int status;
    struct alarm a;
    a.time = file;
    a.alarm_id = idCount++;
    a.childPid = pid;
-   a.pidNumber = getpid(); 
    alarms[numOfElems] = a; 
    numOfElems++;
    spaceLeft--;
-   //printf("new child has pid %d", pid);
 
    if (pid == 0) {
       sleep(difftime(file, currenttime));
@@ -144,7 +140,6 @@ void setAlarm(){
 
     }
    /* output results */
-
    printf("\nTimer set at %s",ctime(&file));
 
    return;
@@ -175,7 +170,6 @@ void listAlarms(){
    time_t t = time(NULL);
    printf("\n%-20s %-10s\n", "UTC:",  asctime(localtime(&t)));
    if (numOfElems == 0){
-      
       printf("No active alarms to show\n");
       return;
    }
@@ -204,7 +198,7 @@ int main()
       printf("Enter a character: ");
       scanf("%s", &chr);
 
-      if (numOfElems >0){ // removes alarms that have rung from the displayed list
+      if (numOfElems > 0){ // removes alarms that have rung from the displayed list
          time_t currenttime = time(NULL);
          struct tm *tm_struct = localtime(&currenttime);
          for (int i = 0; i < numOfElems; i++) {
