@@ -4,36 +4,28 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <sys/wait.h>
 
-//NOTE: genreally, need to implement error catching for faulty user input
 
-struct alarm {
+struct alarm { // alarm-structure to assign data and store in an array
    int alarm_id; 
    time_t time; 
-   pid_t childPid; //only need one of this and pidnumber. clean up 
-   int pidNumber;
+   pid_t childPid;
 };
 
-int idCount = 0;
-int numOfElems = 0;
-struct alarm alarms[100]; 
+int zombies = 0; // integer to keep track of zombies to kill
+int idCount = 0; // integer to keep track of what id an alarm should get
+int numOfElems = 0; // integer to keep track of number of alarms added to the alarm-array
+int spaceLeft = 100; // integer to keep track if all spaces in array is taken
+struct alarm alarms[100]; // array to keep the alarms
 
 
 void setAlarm(){ 
-
-   int year, month, day, hrs, mins, seconds,i=0;
-   printf("Enter Year: ");
-   scanf("%d",&year);
-   printf("Enter Month: ");
-   scanf("%d",&month);
-   printf("Enter Day: ");
-   scanf("%d",&day);
-   printf("Enter Hours: ");
-   scanf("%d",&hrs);
-   printf("Enter Minute: ");
-   scanf("%d",&mins);
-   printf("Enter Second: ");
-   scanf("%d",&seconds);
+   // checks if array is full and refuses input if no space left
+   if (spaceLeft == 0) {
+      printf("No more space for alarms:(");
+      return;
+   }
 
    time_t now,file;
    struct tm *date;
@@ -47,6 +39,51 @@ void setAlarm(){
    int hournow = tm_struct->tm_hour;
    int minnow = tm_struct->tm_min;
    int secnow = tm_struct->tm_sec;
+
+   // scans input and validates it to set an alarm at chosen time & date
+   int year, month, day, hrs, mins, seconds,i=0;
+   printf("Enter Year: ");
+   scanf("%d",&year);
+   while (year < yearnow + 1900) { 
+      printf("Cannot enter year in the past.\n");
+      printf("Enter Year: ");
+      scanf("%d",&year);
+   }
+   printf("Enter Month: ");
+   scanf("%d",&month);
+   while (month < 1 || month > 12) {
+      printf("Enter month between 1 and 12.\n");
+      printf("Enter Month: ");
+      scanf("%d",&month);
+   }
+   printf("Enter Day: ");
+   scanf("%d",&day);
+   while (day < 1 || day > 31) {
+      printf("Enter day between 1 and 31.\n");
+      printf("Enter Day: ");
+      scanf("%d",&day);
+   }
+   printf("Enter Hours: ");
+   scanf("%d",&hrs);
+   while (hrs < 0 || hrs > 23) {
+      printf("Enter hours between 00 and 23.\n");
+      printf("Enter Hours: ");
+      scanf("%d",&hrs);
+   }
+   printf("Enter Minute: ");
+   scanf("%d",&mins);
+   while (mins < 0 || mins > 59) {
+      printf("Enter minutes between 0 and 59.\n");
+      printf("Enter Minute: ");
+      scanf("%d",&mins);
+   }
+   printf("Enter Second: ");
+   scanf("%d",&seconds);
+   while (seconds < 0 || seconds > 59) {
+      printf("Enter seconds between 0 and 59.\n");
+      printf("Enter Second: ");
+      scanf("%d",&seconds);
+   }
 
    time(&now);
    date = localtime(&now);
@@ -71,10 +108,9 @@ void setAlarm(){
    a.time = file;
    a.alarm_id = idCount++;
    a.childPid = pid;
-   a.pidNumber = getpid(); 
    alarms[numOfElems] = a; 
    numOfElems++;
-   //printf("new child has pid %d", pid);
+   spaceLeft--;
 
    if (pid == 0) {
       sleep(difftime(file, currenttime));
@@ -104,7 +140,6 @@ void setAlarm(){
 
     }
    /* output results */
-
    printf("\nTimer set at %s",ctime(&file));
 
    return;
@@ -118,7 +153,8 @@ void deleteAlarm(){
    
    for (int i = 0; i < numOfElems; i++) {
       if (alarms[i].alarm_id == number){
-         kill(alarms[i].childPid, 2); 
+         kill(alarms[i].childPid, 2); // kills child process
+         zombies++; // one more zombie to kill
          for(int j=i; j<numOfElems; j++) {
             alarms[j] = alarms[j + 1];
          }
@@ -134,7 +170,6 @@ void listAlarms(){
    time_t t = time(NULL);
    printf("\n%-20s %-10s\n", "UTC:",  asctime(localtime(&t)));
    if (numOfElems == 0){
-      
       printf("No active alarms to show\n");
       return;
    }
@@ -142,7 +177,7 @@ void listAlarms(){
    printf("------------------------------------------------------\n");
    for (int i = 0; i < numOfElems; i++)
    {
-      if (&alarms[i] != NULL){
+      if (&alarms[i] != NULL){ // displayes all alarms in the array
          printf("%-20d %-10s \n", alarms[i].alarm_id, ctime(&alarms[i].time));
          
       }
@@ -163,17 +198,24 @@ int main()
       printf("Enter a character: ");
       scanf("%s", &chr);
 
-      if (numOfElems >0){
+      if (numOfElems > 0){ // removes alarms that have rung from the displayed list
          time_t currenttime = time(NULL);
          struct tm *tm_struct = localtime(&currenttime);
          for (int i = 0; i < numOfElems; i++) {
-            if (difftime(alarms[i].time, currenttime) <= 0){
+            if (difftime(alarms[i].time, currenttime) <= 0){ // checks that the alarm in the list is in the past, and removes it if so
                for(int j=i; j < numOfElems; j++) {
                   alarms[j] = alarms[j + 1];
                }
-               numOfElems--; 
+               i--;
+               numOfElems--;
+               zombies++; // counts one zombie that needs to be killed
             }
          }
+      }
+
+      while (zombies > 0) {
+         waitpid(-1, NULL, WNOHANG); // kills all registered zombies
+         zombies--;
       }
       
       switch (chr){
