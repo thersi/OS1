@@ -27,11 +27,24 @@ void setAlarm(){
       return;
    }
 
+   time_t now,file;
+   struct tm *date;
+
+   /* fill the tm structure with the current date/time */
+   time_t currenttime = time(NULL);
+   struct tm *tm_struct = localtime(&currenttime);
+   int yearnow = tm_struct->tm_year;
+   int monthnow = tm_struct->tm_mon;
+   int daynow = tm_struct->tm_mday;
+   int hournow = tm_struct->tm_hour;
+   int minnow = tm_struct->tm_min;
+   int secnow = tm_struct->tm_sec;
+
    // scans input and validates it to set an alarm at chosen time & date
    int year, month, day, hrs, mins, seconds,i=0;
    printf("Enter Year: ");
    scanf("%d",&year);
-   while (year < 2022) { //Burde ikke hardkode dette årstallet
+   while (year < yearnow + 1900) { 
       printf("Cannot enter year in the past.\n");
       printf("Enter Year: ");
       scanf("%d",&year);
@@ -71,19 +84,6 @@ void setAlarm(){
       printf("Enter Second: ");
       scanf("%d",&seconds);
    }
-
-   time_t now,file;
-   struct tm *date;
-
-   /* fill the tm structure with the current date/time */
-   time_t currenttime = time(NULL);
-   struct tm *tm_struct = localtime(&currenttime);
-   int yearnow = tm_struct->tm_year;
-   int monthnow = tm_struct->tm_mon;
-   int daynow = tm_struct->tm_mday;
-   int hournow = tm_struct->tm_hour;
-   int minnow = tm_struct->tm_min;
-   int secnow = tm_struct->tm_sec;
 
    time(&now);
    date = localtime(&now);
